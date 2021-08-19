@@ -17,29 +17,29 @@ const resolvers = {
   },
 
   Mutation: {
-    // Log in resolver
+    // Add user mutation
+    addUser: async (parent, { username, email, password }) => {
+      const user = await User.create({ username, email, password });
+      const token = signToken(user);
+
+      return { token, user };
+    },
+
+    // Log in Mutation
     login: async (parent, { email, password }) => {
       const user = await User.findOne({ email });
 
       if (!user) {
-        throw new AuthenticationError('No profile with this email found!');
+        throw new AuthenticationError("No profile with this email found!");
       }
 
-      const correctPw = await profile.isCorrectPassword(password);
+      const correctPw = await user.isCorrectPassword(password);
 
       if (!correctPw) {
-        throw new AuthenticationError('Incorrect password!');
+        throw new AuthenticationError("Incorrect password!");
       }
 
       const token = signToken(user);
-      return { token, user };
-    },
-
-    // Add user resolver
-    addUser: async (parent, { username, email, password }) => {
-      const user = await Profile.create({ username, email, password });
-      const token = signToken(user);
-
       return { token, user };
     },
 
@@ -58,7 +58,6 @@ const resolvers = {
         return res.status(400).json(err);
       }
     },
-
 
     // remove a book from `savedBooks`
     removeBook: async ({ user, params }, res) => {
