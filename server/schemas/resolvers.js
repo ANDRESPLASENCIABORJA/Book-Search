@@ -44,12 +44,13 @@ const resolvers = {
     },
 
     // Save book mutation
-    saveBook: async ({ user, body }, res) => {
+    // Destructure bookToSave from the typedefs file that has on it the book input, then pass it to the updated user
+    saveBook: async (parent, { bookToSave }, res) => {
       console.log(user);
       try {
         const updatedUser = await User.findOneAndUpdate(
           { _id: user._id },
-          { $addToSet: { savedBooks: body } },
+          { $addToSet: { savedBooks: bookToSave } },
           { new: true, runValidators: true }
         );
         return res.json(updatedUser);
